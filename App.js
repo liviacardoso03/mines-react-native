@@ -1,9 +1,29 @@
 import React, {Component} from 'react';
 import params from './src/params';
-import Field from './src/components/Field';
 import {SafeAreaView, StyleSheet, Text} from 'react-native';
+import MineField from './src/components/MineField';
+import {createMineBoard} from './src/functions';
 
 export default class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = this.createState();
+  }
+
+  minesAmount = () => {
+    const cols = params.getColumnsAmount();
+    const rows = params.getRowsAmount();
+    return Math.ceil(cols * rows * params.difficultLevel);
+  };
+
+  createState = () => {
+    const cols = params.getColumnsAmount();
+    const rows = params.getRowsAmount();
+    return {
+      board: createMineBoard(rows, cols, this.minesAmount()),
+    };
+  };
+
   render() {
     return (
       <SafeAreaView style={styles.container}>
@@ -11,18 +31,9 @@ export default class App extends Component {
         <Text style={styles.welcome}>
           Tamanho da grade: {params.getRowsAmount()}x{params.getColumnsAmount()}
         </Text>
-
-        <Field />
-        <Field opened />
-        <Field opened nearMines={1} />
-        <Field opened nearMines={2} />
-        <Field opened nearMines={3} />
-        <Field opened nearMines={6} />
-        <Field mined />
-        <Field mined opened exploded />
-        <Field mined opened />
-        <Field flagged />
-        <Field flagged opened />
+        <SafeAreaView style={styles.board}>
+          <MineField board={this.state.board} />
+        </SafeAreaView>
       </SafeAreaView>
     );
   }
@@ -31,14 +42,13 @@ export default class App extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
   },
 
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
+  board: {
+    alignItems: 'center',
+    backgroundColor: '#AAA',
   },
 });
